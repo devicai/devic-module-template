@@ -1,0 +1,30 @@
+# Standalone example — no extensions, no multi-tenancy
+# Just a simple service with its own database.
+#
+# Usage:
+#   cd examples/standalone
+#   docker compose up
+
+services:
+  module:
+    build: ../../
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./config.yml:/app/config.yml:ro
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongo-data:

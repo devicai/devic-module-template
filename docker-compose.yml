@@ -1,0 +1,28 @@
+services:
+  app:
+    build: .
+    ports:
+      - "${PORT:-3100}:3100"
+    volumes:
+      - ./config.yml:/app/config.yml:ro
+    environment:
+      - DATABASE_URI=mongodb://mongo:27017/module
+      - MODULE_API_KEY=${MODULE_API_KEY:-dev-key}
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  mongo:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mongo-data:

@@ -1,0 +1,82 @@
+# =============================================================================
+# Devic OS Module Configuration
+# =============================================================================
+# Copy this file to config.yml and adjust to your environment.
+# Use ${ENV_VAR} syntax to reference environment variables.
+
+# --- Server ---
+server:
+  port: 3100
+  basePath: /api/v1
+  cors:
+    enabled: true
+    origins:
+      - http://localhost:3000
+
+# --- Database ---
+database:
+  provider: mongodb
+  uri: ${DATABASE_URI:-mongodb://localhost:27017/my-module}
+
+# --- Storage (if module handles files) ---
+storage:
+  provider: local
+  localPath: ./uploads
+  maxFileSize: 50mb
+  # s3:
+  #   bucket: my-bucket
+  #   region: eu-west-1
+  #   accessKeyId: ${AWS_ACCESS_KEY_ID}
+  #   secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+
+# --- Entity extensions ---
+# Add scoping properties to entities dynamically.
+# These are injected into schemas at boot and resolved from request headers.
+#
+# Example: multi-tenant scoping
+# extensions:
+#   properties:
+#     - name: clientUID
+#       type: string
+#       required: true
+#       index: true
+#       entities: "*"
+#       source: header
+#       headerName: x-client-uid
+#
+#     - name: projectId
+#       type: string
+#       required: false
+#       index: true
+#       entities:
+#         - Document
+#         - Folder
+#       source: header
+#       headerName: x-project-id
+extensions:
+  properties: []
+
+# --- Service authentication ---
+auth:
+  enabled: false
+  strategy: api-key          # api-key | jwt | none
+  # apiKeys:
+  #   - name: my-app
+  #     key: ${MODULE_API_KEY}
+
+# --- Webhooks ---
+webhooks:
+  events: {}
+  # events:
+  #   resource.created: https://my-app.com/webhooks/handler
+  #   resource.updated: https://my-app.com/webhooks/handler
+  headers: {}
+  # headers:
+  #   Authorization: Bearer ${WEBHOOK_SECRET}
+  retries: 3
+  timeoutMs: 5000
+
+# --- Logging ---
+logging:
+  level: info
+  format: json               # json | pretty
