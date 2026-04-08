@@ -123,27 +123,45 @@ Every Devic module **must** use the same layout structure:
 - **Inner content padding**: `10px`
 - **Border radius**: `8px` on panels
 
-### Sidebar structure
+### Sidebar structure (MANDATORY)
+
+Every Devic OS module **must** use the exact same sidebar structure as the Devic main frontend. This ensures a seamless experience when the module is integrated into Devic — the module's section simply "plugs in" alongside Devic's other sections.
 
 ```
-┌─────────────────┐
-│  Logo / Header  │  60px, border-bottom
-├─────────────────┤
-│  Search input   │  padding: 12px 12px 8px
-├─────────────────┤
-│                 │
-│  Main nav       │  flex: 1, overflow-y: auto
-│  (nav items)    │
-│                 │
-├─────────────────┤
-│  Divider        │
-├─────────────────┤
-│  Footer nav     │  padding: 8px, shrink: 0
-│  (Settings...)  │
-└─────────────────┘
+┌────────────────────────────┐
+│  [Logo]            [Edit]  │  30px header, marginBottom 20px
+├────────────────────────────┤
+│  🔍 Search...              │  Input, size: small
+├────────────────────────────┤
+│                            │
+│  📖 Module Name       ▼    │  ← SINGLE expandable root
+│     📄 Section 1           │
+│     📁 Section 2           │  Inline menu, children
+│     🔎 Section 3           │
+│                            │
+│                            │
+├────────────────────────────┤
+│  👤 User Name       ▲▼     │  60px footer with popover
+│     user@email.com         │
+└────────────────────────────┘
 ```
 
-Background: `#1f1f1f` dark / `#FAFAFA` light. Border radius: `8px`.
+**Rules:**
+
+1. **Header** (30px height): Module logo/icon on the left (absolute, top: 10px, left: 10px), action icon on the right (e.g. "New document", "New chat"). Margin-bottom 20px.
+2. **Search input**: size="small", transparent background, subtle border, magnifying glass prefix icon.
+3. **Module menu**: Exactly **ONE** top-level expandable section — the module itself. All features of the module go as **children subsections**. This is critical for integration: when the module plugs into Devic, its root section sits alongside Devic's own (Assistants, Agents, Knowledge, etc).
+4. **Footer** (60px height): User avatar + name + email, wrapped in a Popover that reveals Settings / Documentation / Log Out menu.
+
+**Background:** `#1f1f1f` dark. **Border radius:** `8px`.
+
+**Configuration:** edit `src/components/Layout/Sidebar/moduleConfig.ts` to set your module name, icon, base path, and sections. Do **not** add multiple top-level sections — keep everything under the single root.
+
+**Do NOT:**
+- Split the sidebar into two panels (folders panel + main nav). Use the main content area for folder trees.
+- Add multiple top-level menu sections. Use one root + children.
+- Change the header, search, or footer structure. Only the module menu section varies.
+- Add a "settings" item in the main nav. Settings always live in the footer popover.
 
 ---
 

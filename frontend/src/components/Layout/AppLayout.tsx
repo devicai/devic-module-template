@@ -3,12 +3,13 @@ import { theme } from 'antd';
 import Sidebar from './Sidebar/Sidebar';
 
 /**
- * Main layout — matches the Devic frontend structure.
+ * Main layout — matches the Devic frontend structure exactly.
  *
- * Layout: horizontal flex, sidebar + content panel.
- * - Sidebar: 15% min 250px (expanded) / 60px (collapsed, not implemented in template)
- * - Content: fills remaining space, scroll contained
- * - Full viewport height
+ * Layout:
+ *   - Horizontal flex, full viewport
+ *   - Sidebar: 15% min 250px
+ *   - Content panel: flex 1, scroll contained
+ *   - Outer padding: 5px, gap: 5px
  */
 function AppLayout() {
   const { token } = theme.useToken();
@@ -22,10 +23,15 @@ function AppLayout() {
         overflow: 'hidden',
         padding: 5,
         gap: 5,
-        backgroundColor: token.colorBgLayout,
+        backgroundColor: '#141414',
       }}
     >
-      <Sidebar />
+      {/* Sidebar — width 15% min 250px */}
+      <div style={{ width: '15%', minWidth: 250, flexShrink: 0 }}>
+        <Sidebar />
+      </div>
+
+      {/* Main content panel */}
       <main
         style={{
           flex: 1,
@@ -33,7 +39,6 @@ function AppLayout() {
           borderRadius: 8,
           padding: 10,
           overflowY: 'auto',
-          border: `1px solid ${token.colorBorder}`,
         }}
       >
         <Outlet />

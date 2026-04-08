@@ -1,158 +1,173 @@
 import { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router';
-import { Input, Tooltip, theme, Typography, Divider } from 'antd';
+import { Input, Tooltip } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faHome,
-  faGear,
-  faSearch,
-  faBook,
-} from '@fortawesome/free-solid-svg-icons';
-
-const { Text } = Typography;
-
-interface NavItem {
-  key: string;
-  label: string;
-  icon: typeof faHome;
-  path: string;
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { key: 'home', label: 'Home', icon: faHome, path: '/' },
-  { key: 'docs', label: 'Documentation', icon: faBook, path: '/docs' },
-];
-
-const FOOTER_ITEMS: NavItem[] = [
-  { key: 'settings', label: 'Settings', icon: faGear, path: '/settings' },
-];
+import { faSearch, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
+import { useNavigate } from 'react-router';
+import { SidebarModuleMenu } from './SidebarModuleMenu';
+import { SidebarFooter } from './SidebarFooter';
+import { MODULE_CONFIG } from './moduleConfig';
 
 /**
- * Sidebar — matches the Devic frontend sidebar.
+ * Sidebar — matches Devic's Sidebar structure exactly.
  *
  * Structure:
- *   - Logo header (30-60px)
+ *   - Header (30px) with logo on left + action icon on right, marginBottom 20px
  *   - Search input
- *   - Main nav (grows to fill)
- *   - Footer (shrink: 0)
+ *   - Module menu (single root section with children subsections)
+ *   - Footer (60px) with user popover
  *
- * Width: 15% min 250px
- * Background: #1f1f1f (dark) / #FAFAFA (light)
- * Border radius: 8px
+ * When integrated into Devic, the module's single root section appears
+ * alongside Devic's other sections (Assistants, Agents, Knowledge, etc),
+ * providing a seamless experience.
  */
-function Sidebar() {
+export function Sidebar() {
+  const [searchText, setSearchText] = useState('');
   const navigate = useNavigate();
-  const location = useLocation();
-  const { token } = theme.useToken();
-  const [search, setSearch] = useState('');
 
-  const isActive = (path: string) =>
-    path === '/' ? location.pathname === '/' : location.pathname.startsWith(path);
-
-  const renderItem = (item: NavItem) => {
-    const active = isActive(item.path);
-    return (
-      <Tooltip key={item.key} title={item.label} placement="right">
-        <div
-          onClick={() => navigate(item.path)}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            padding: '8px 12px',
-            borderRadius: 6,
-            cursor: 'pointer',
-            color: active ? token.colorPrimary : token.colorText,
-            backgroundColor: active ? 'rgba(70, 97, 177, 0.1)' : 'transparent',
-            transition: 'background-color 0.2s ease',
-          }}
-          onMouseEnter={(e) => {
-            if (!active) {
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)';
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!active) {
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }
-          }}
-        >
-          <FontAwesomeIcon icon={item.icon} style={{ fontSize: 14, width: 16 }} />
-          <Text style={{ color: 'inherit', fontSize: 13 }}>{item.label}</Text>
-        </div>
-      </Tooltip>
-    );
+  const handleHeaderAction = () => {
+    // Customize this per module — e.g. "Create new document", "New chat", etc.
+    navigate(MODULE_CONFIG.basePath);
   };
 
   return (
-    <aside
+    <div
+      className="d-flex flex-column"
       style={{
-        width: '15%',
-        minWidth: 250,
-        backgroundColor: token.colorBgContainer,
+        height: '100%',
+        width: '100%',
+        backgroundColor: '#1f1f1f',
+        position: 'relative',
+        userSelect: 'none',
         borderRadius: 8,
-        border: `1px solid ${token.colorBorder}`,
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden',
       }}
     >
-      {/* Logo / Header */}
+      {/* --- Header with logo + action icon --- */}
       <div
         style={{
-          height: 60,
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 16px',
-          borderBottom: `1px solid ${token.colorBorder}`,
+          height: 30,
+          minHeight: 30,
           flexShrink: 0,
+          position: 'relative',
+          marginBottom: 20,
+          marginTop: 10,
         }}
       >
-        <Text strong style={{ fontSize: 14, color: token.colorText }}>
-          Devic Module
-        </Text>
+        {/* Logo (module icon + name as placeholder for branding) */}
+        <div
+          onClick={() => navigate('/')}
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 12,
+            height: 30,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            cursor: 'pointer',
+          }}
+        >
+          {/* Replace this div with an <img src="/logo.svg" /> for your module */}
+          <div
+            style={{
+              width: 28,
+              height: 28,
+              borderRadius: 6,
+              background: 'linear-gradient(135deg, #4661B1 0%, #6652b2 100%)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#fff',
+              fontSize: 14,
+              fontWeight: 700,
+            }}
+          >
+            {MODULE_CONFIG.name[0]}
+          </div>
+        </div>
+
+        {/* Action icon on the right (e.g. new document, new chat) */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 6,
+            right: 15,
+            display: 'flex',
+            gap: 12,
+            alignItems: 'center',
+          }}
+        >
+          <Tooltip title={`New ${MODULE_CONFIG.name.toLowerCase()}`}>
+            <FontAwesomeIcon
+              icon={faPenToSquare}
+              onClick={handleHeaderAction}
+              style={{
+                fontSize: 18,
+                color: '#d9d9d9',
+                cursor: 'pointer',
+              }}
+              className="hover-opacity clickable"
+            />
+          </Tooltip>
+        </div>
       </div>
 
-      {/* Search */}
-      <div style={{ padding: '12px 12px 8px' }}>
-        <Input
-          size="small"
-          prefix={<FontAwesomeIcon icon={faSearch} style={{ fontSize: 11 }} />}
-          placeholder="Search..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
-
-      {/* Main navigation */}
-      <nav
+      {/* --- Scrollable area: search + menus --- */}
+      <div
         style={{
-          flex: 1,
-          padding: '4px 8px',
+          flexGrow: 1,
+          position: 'relative',
           overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
         }}
       >
-        {NAV_ITEMS.map(renderItem)}
-      </nav>
+        {/* Search input */}
+        <div style={{ padding: '0 12px 8px' }}>
+          <Input
+            placeholder="Search..."
+            prefix={
+              <FontAwesomeIcon
+                icon={faSearch}
+                style={{ color: '#8c8c8c', fontSize: 12 }}
+              />
+            }
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            allowClear
+            size="small"
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.06)',
+              borderColor: 'rgba(255, 255, 255, 0.1)',
+              borderRadius: 6,
+            }}
+          />
+        </div>
 
-      <Divider style={{ margin: 0 }} />
+        {/* Module menu — ONE root section with children */}
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <SidebarModuleMenu searchText={searchText} defaultExpanded />
+        </div>
+      </div>
 
-      {/* Footer */}
+      {/* --- Footer with user info --- */}
       <div
         style={{
-          padding: '8px',
+          width: '100%',
+          height: 60,
           flexShrink: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
+          zIndex: 9,
+          padding: 4,
         }}
       >
-        {FOOTER_ITEMS.map(renderItem)}
+        <SidebarFooter />
       </div>
-    </aside>
+    </div>
   );
 }
 
