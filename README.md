@@ -379,11 +379,37 @@ GET /api/v1/docs-json   → OpenAPI JSON spec
 
 ---
 
+## Frontend
+
+Every Devic OS module includes a **frontend scaffold** that matches the Devic design system. This ensures a consistent look and feel across all modules — whether used standalone or integrated into Devic.
+
+**Location:** `frontend/`
+
+**Stack:** React 19 + Vite + TypeScript + Ant Design 5 + FontAwesome
+
+**Key conventions:**
+- Dark mode by default, primary color `#4661B1`
+- Sidebar (15% min 250px) + content layout, matching Devic
+- FontAwesome free (solid preferred) for all icons
+- Ant Design components with shared theme tokens
+- React Context for state management (no Redux/Zustand)
+
+See [`frontend/README.md`](./frontend/README.md) for the full design system guide — colors, typography, spacing, component conventions, and the rules for choosing between tooltips, modals, popovers, and notifications.
+
+**Quick start:**
+```bash
+cd frontend
+yarn install
+yarn dev
+```
+
+---
+
 ## Project Structure
 
 ```
 your-module/
-├── src/
+├── src/                           # Backend (NestJS)
 │   ├── main.ts                    # Bootstrap
 │   ├── app.module.ts              # Root module
 │   ├── config/
@@ -406,6 +432,15 @@ your-module/
 │   │   └── storage/
 │   └── health/
 │       └── health.controller.ts
+├── frontend/                      # Frontend (React + Vite + Ant Design)
+│   ├── src/
+│   │   ├── App.tsx                # Theme provider + routes
+│   │   ├── components/Layout/     # Sidebar + content layout
+│   │   ├── pages/                 # Page components
+│   │   ├── styles/dark-theme.css  # Ant Design dark overrides
+│   │   └── index.css              # Global styles
+│   ├── package.json
+│   └── README.md                  # Design system guide
 ├── test/
 │   ├── unit/
 │   ├── e2e/
