@@ -127,6 +127,8 @@ Every Devic module **must** use the same layout structure:
 
 Every Devic OS module **must** use the exact same sidebar structure as the Devic main frontend. This ensures a seamless experience when the module is integrated into Devic — the module's section simply "plugs in" alongside Devic's other sections.
 
+**📘 See [`SIDEBAR_SPEC.md`](./SIDEBAR_SPEC.md) for the full component-by-component specification** with exact styles, behaviors, and patterns. The section below is a summary.
+
 ```
 ┌────────────────────────────┐
 │  [Logo]            [Edit]  │  30px header, marginBottom 20px
